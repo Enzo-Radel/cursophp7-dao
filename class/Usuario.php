@@ -45,7 +45,6 @@ class Usuario {
 
         $resultado = $sql->select("SELECT * FROM tb_usuarios WHERE idusuario = :ID", array(":ID"=>$id) );
 
-        //echo json_encode($resultado);
         if (count($resultado) > 0){
 
             $row = $resultado[0];
@@ -55,12 +54,45 @@ class Usuario {
             $this->setDessenha($row["dessenha"]);
             $this->setDtcadastro(new DateTime($row["dtcadastro"]));
             
-            //echo "teste if";
+        }
+
+    }
+
+    public static function listar(){
+        $sql = new Sql();
+        
+        return $sql->select("SELECT * FROM tb_usuarios ORDER BY deslogin");
+    }
+
+    public static function search($login){
+        $sql = new Sql();
+
+        return $sql->select("SELECT * FROM tb_usuarios WHERE deslogin LIKE :SEARCH ORDER BY deslogin", array(
+            ':SEARCH'=>"%".$login."%"
+        ));
+    }
+
+    public function logar($login, $senha){
+
+        $sql = new Sql();
+
+        $informacoes = $sql->select("SELECT * FROM tb_usuarios WHERE deslogin = :LOGIN AND dessenha = :SENHA", array(
+            ":LOGIN"=>$login,
+            ":SENHA"=>$senha) );
+
+        if (count($informacoes)>0){
+
+            $row = $informacoes[0];
+
+            $this->setIdusuario($row["idusuario"]);
+            $this->setDeslogin($row["deslogin"]);
+            $this->setDessenha($row["dessenha"]);
+            $this->setDtcadastro(new DateTime($row["dtcadastro"]));
+               
         }
         else {
-            //echo "nao funfou";
+            echo "login e/ou senha inválidos";
         }
-        //echo "funfou";
 
     }
 
