@@ -39,6 +39,15 @@ class Usuario {
         return $this->dtcadastro;
     }
 
+    public function setData($data){
+    
+        $this->setIdusuario($data["idusuario"]);
+        $this->setDeslogin($data["deslogin"]);
+        $this->setDessenha($data["dessenha"]);
+        $this->setDtcadastro(new DateTime($data["dtcadastro"]));
+
+    }
+
     public function loadById($id){
 
         $sql = new Sql();
@@ -47,13 +56,8 @@ class Usuario {
 
         if (count($resultado) > 0){
 
-            $row = $resultado[0];
+            $this->setData($resultado[0]);
 
-            $this->setIdusuario($row["idusuario"]);
-            $this->setDeslogin($row["deslogin"]);
-            $this->setDessenha($row["dessenha"]);
-            $this->setDtcadastro(new DateTime($row["dtcadastro"]));
-            
         }
 
     }
@@ -76,24 +80,57 @@ class Usuario {
 
         $sql = new Sql();
 
-        $informacoes = $sql->select("SELECT * FROM tb_usuarios WHERE deslogin = :LOGIN AND dessenha = :SENHA", array(
+        $resultado = $sql->select("SELECT * FROM tb_usuarios WHERE deslogin = :LOGIN AND dessenha = :SENHA", array(
             ":LOGIN"=>$login,
             ":SENHA"=>$senha) );
 
-        if (count($informacoes)>0){
+        if (count($resultado)>0){
 
-            $row = $informacoes[0];
-
-            $this->setIdusuario($row["idusuario"]);
-            $this->setDeslogin($row["deslogin"]);
-            $this->setDessenha($row["dessenha"]);
-            $this->setDtcadastro(new DateTime($row["dtcadastro"]));
+            $this->setData($resultado[0]);
                
         }
         else {
             echo "login e/ou senha inválidos";
         }
 
+    }
+
+    public function insert(){
+
+        $sql = new Sql();
+
+        $resultado = $sql->select("CALL sp_usuarios_insert(:LOGIN, :SENHA)",array(
+            ':LOGIN'=>$this->getDeslogin(),
+            ':SENHA'=>$this->getDessenha()
+        ));
+        if (count($resultado)>0){
+
+            $this->setData($resultado[0]);
+        }
+        else {
+            echo "nao funfou";
+        }
+
+    }
+
+    public function update($login,$senha){
+
+        $this->setDeslogin($login);
+        $this->setDessenha($senha);      
+
+        $sql = new Sql();  
+
+        $sql->query("UPDATE tb_usuarios SET deslogin = :LOGIN, dessenha :PASSWORD WHERE idusuario = :ID", array(
+            ':LOGIN'=>$this->getDeslogin(),
+            ':PASSWORD'=>$this->getDessenha(),
+            ':ID'=>$this->getIdusuario()
+        ));
+
+    }
+
+    public function __construct($login = "",$senha = ""){
+        $this->setDeslogin($login);
+        $this->setDessenha($senha);
     }
 
     public function __toString(){

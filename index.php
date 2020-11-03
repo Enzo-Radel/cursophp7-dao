@@ -15,10 +15,23 @@ echo json_encode ($lista);*/
 
 echo json_encode ($teste);*/
 
-$acesso = new Usuario();
+/*$acesso = new Usuario();
 
 $acesso->logar("reginaldo","qwerty");
 
-echo $acesso;
+echo $acesso;*/
 
+/*$aluno = new Usuario("aluno3","OlaMundo");
+
+$aluno->insert();
+
+echo $aluno;*/
+
+$aluno = new Usuario();
+
+$aluno->loadById(6);
+
+$aluno->update("professor","s3nh4");
+
+echo $aluno;
 ?>
